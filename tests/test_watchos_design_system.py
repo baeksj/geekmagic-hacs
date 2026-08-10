@@ -41,6 +41,7 @@ from custom_components.geekmagic.htmldoc import (
     theme_css_variables,
 )
 from custom_components.geekmagic.widgets._card import CARD_CSS
+from custom_components.geekmagic.widgets._textfit import metrics_for
 from custom_components.geekmagic.widgets.theme import (
     DEFAULT_THEME,
     THEME_CLASSIC,
@@ -149,9 +150,9 @@ class TestThemePalette:
         assert THEME_CLASSIC.surface_chrome is True
         assert THEME_CLASSIC.chrome_css.strip() != ""
 
-    def test_watchos_uses_rounded_font(self) -> None:
+    def test_watchos_uses_noto_font(self) -> None:
         assert THEME_WATCHOS.rounded_font is True
-        assert "Nunito" in THEME_WATCHOS.font_stack
+        assert THEME_WATCHOS.font_stack == '"Noto Sans KR", sans-serif'
 
     def test_watchos_tint_track_enabled(self) -> None:
         """Activity-ring style: tracks are tinted, not gray."""
@@ -230,15 +231,15 @@ class TestThemeCSSFields:
 
     @pytest.mark.parametrize("theme", THEME_OBJS, ids=THEME_IDS)
     def test_font_stack_uses_embedded_family(self, theme: Theme) -> None:
-        """Blitz only resolves fonts embedded by htmldoc — a stack naming
-        neither embedded family would silently fall back per-glyph."""
-        assert "Nunito" in theme.font_stack or "DejaVu Sans" in theme.font_stack, (
-            f"{theme.name}.font_stack={theme.font_stack!r} references no embedded family"
+        """Every built-in theme uses the bundled Noto face for regular text."""
+        assert theme.font_stack == '"Noto Sans KR", sans-serif', (
+            f"{theme.name}.font_stack={theme.font_stack!r} is not Noto-only"
         )
+        assert metrics_for(theme).family == "noto"
 
     @pytest.mark.parametrize("theme", THEME_OBJS, ids=THEME_IDS)
     def test_font_stack_includes_korean_fallback(self, theme: Theme) -> None:
-        """Every theme must use the bundled Hangul face before system fallback."""
+        """Every theme must use the bundled Hangul face."""
         assert "Noto Sans KR" in theme.font_stack
 
     @pytest.mark.parametrize("theme", THEME_OBJS, ids=THEME_IDS)

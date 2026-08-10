@@ -345,10 +345,13 @@ class TestWeatherBands:
 class TestWeatherPlaceholder:
     """The no-entity cell must not impersonate a reading."""
 
-    @pytest.mark.parametrize(("width", "height"), [(69, 65), (74, 71), (111, 72)])
-    def test_short_cells_keep_a_caption(self, width, height):
+    @pytest.mark.parametrize(
+        ("width", "height", "caption"),
+        [(69, 65, "NO DATA"), (74, 71, "NO DATA"), (111, 72, "NO WEATHER DATA")],
+    )
+    def test_short_cells_keep_a_caption(self, width, height, caption):
         fragment = weather().render_html(cell(width, height), weather_state(entity=False))
-        assert "NO DATA" in fragment
+        assert caption in fragment
         assert "hide-short" not in fragment
         assert glyph("alert-circle-outline") in fragment
 

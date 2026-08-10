@@ -9,11 +9,9 @@ for layout math done in Python. That includes the engine's system-font
 fallback, so CJK titles measure at their real fullwidth advance.
 
 Measurement is theme-aware, which matters more than it sounds: themes
-are full stylesheets. ``retro`` and ``minimal`` render in DejaVu Sans
-(markedly wider than Nunito) and ``retro`` additionally uppercases the
-kit's label class. Measuring Nunito mixed-case for a cell that will
-draw DejaVu caps is how captions end up bleeding off the edge of a
-240px panel.
+are full stylesheets and may transform their labels. Built-in themes
+render with Noto Sans KR, so Latin, Hangul, and mixed strings are fitted
+with the same face that Blitz draws.
 
 The module also answers the inverse question — "how big can this string
 be and still fit?" — which is how hero values get sized to their cell
@@ -44,7 +42,7 @@ if TYPE_CHECKING:
     from .theme import Theme
 
 # CSS family names as registered by the embedded font collection.
-_FAMILY_CSS = {"nunito": "Nunito", "dejavu": "DejaVu Sans"}
+_FAMILY_CSS = {"nunito": "Nunito", "noto": "Noto Sans KR", "dejavu": "DejaVu Sans"}
 # Kit weight names -> CSS numeric weights. DejaVu only embeds 400/700;
 # the engine's font matching collapses the rest onto the nearest face,
 # the same way the rendered document does.
@@ -91,7 +89,7 @@ def _ref_width(text: str, family: str, weight: str) -> float:
     width, _height = _measure_text(
         text,
         font_size=float(_REF_PX),
-        font_family=_FAMILY_CSS.get(family, "Nunito"),
+        font_family=_FAMILY_CSS.get(family, "Noto Sans KR"),
         font_weight=_WEIGHT_NUM.get(weight, 600.0),
         fonts=_fonts(),
     )
@@ -102,7 +100,7 @@ def _ref_width(text: str, family: str, weight: str) -> float:
 class TextMetrics:
     """Measures text the way the active theme will actually draw it."""
 
-    family: str = "nunito"
+    family: str = "noto"
     uppercase: bool = False
     # The .t-label letter-spacing this theme actually renders — use this
     # for caption budgets instead of the worst-case LABEL_TRACKING.
@@ -172,7 +170,7 @@ class TextMetrics:
                 self._measured(text),
                 max_width=max_width,
                 font_size=px,
-                font_family=_FAMILY_CSS.get(self.family, "Nunito"),
+                font_family=_FAMILY_CSS.get(self.family, "Noto Sans KR"),
                 font_weight=_WEIGHT_NUM.get(weight, 600.0),
                 # CSS letter-spacing in px (the engine's unit).
                 letter_spacing=tracking * px,
@@ -208,7 +206,13 @@ def metrics_for(theme: Theme | None) -> TextMetrics:
     if theme is None:
         return _DEFAULT_METRICS
     stack = (getattr(theme, "font_stack", "") or "").lower()
-    family = "dejavu" if "dejavu" in stack.split(",")[0] else "nunito"
+    primary = stack.split(",")[0]
+    if "noto sans kr" in primary:
+        family = "noto"
+    elif "dejavu" in primary:
+        family = "dejavu"
+    else:
+        family = "nunito"
     chrome = (getattr(theme, "chrome_css", "") or "").lower()
     uppercase = "text-transform: uppercase" in chrome
     wide_labels = family == "dejavu" or uppercase

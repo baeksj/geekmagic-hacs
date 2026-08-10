@@ -135,8 +135,8 @@ class Theme:
     # Typography
     value_bold: bool = True
     label_weight: FontWeight = "regular"
-    # Whether the theme prefers the rounded font family (Nunito).
-    # When False, the renderer falls back to DejaVu Sans.
+    # Retained for compatibility with stored/custom theme definitions.
+    # Built-in themes render all regular text with Noto Sans KR.
     rounded_font: bool = True
 
     # Visual effects
@@ -154,11 +154,9 @@ class Theme:
     # not just palettes: distinct fonts, chrome, backdrops, and effects.
     # ------------------------------------------------------------------
 
-    # font-family stack for all cell documents. Families resolve against
-    # the embedded fonts: "Nunito", "Noto Sans KR", "DejaVu Sans",
-    # "Material Design Icons". Noto Sans KR provides Hangul fallback while
-    # keeping the theme's preferred Latin face first.
-    font_stack: str = '"Nunito", "Noto Sans KR", "DejaVu Sans", sans-serif'
+    # Font family for all regular text. Material Design Icons remains a
+    # separate explicit family on icon glyphs.
+    font_stack: str = '"Noto Sans KR", sans-serif'
 
     # Per-cell chrome: styles applied inside every cell document.
     # ``.root`` fills the cell — paint cards/borders on it here.
@@ -300,7 +298,7 @@ THEME_MINIMAL = Theme(
     rounded_font=False,
     tint_track=False,
     bar_background=(28, 28, 28),
-    font_stack='"DejaVu Sans", "Noto Sans KR", sans-serif',
+    font_stack='"Noto Sans KR", sans-serif',
     chrome_css="""
 .root { border-top: 1px solid rgba(255,255,255,0.26); padding: 5px 3px 3px; }
 .t-hero, .t-value { font-weight: 400; letter-spacing: -0.005em; }
@@ -404,7 +402,7 @@ THEME_RETRO = Theme(
     invert_bars=True,
     tint_track_opacity=0.16,
     bar_background=(8, 42, 20),
-    font_stack='"DejaVu Sans", "Noto Sans KR", monospace',
+    font_stack='"Noto Sans KR", sans-serif',
     chrome_css="""
 .root { border: 1px solid rgba(126,255,150,0.28); padding: 5px;
   background: linear-gradient(180deg, rgba(12,48,24,0.40), rgba(4,20,10,0.26));
@@ -760,7 +758,7 @@ THEME_BLUEPRINT = Theme(
     rounded_font=False,
     surface_chrome=True,
     tint_track=False,
-    font_stack='"DejaVu Sans", "Noto Sans KR", sans-serif',
+    font_stack='"Noto Sans KR", sans-serif',
     chrome_css="""
 .root { border-radius: 2px; padding: 4px;
   border: 1px solid rgba(200,220,245,0.42); }
@@ -841,7 +839,7 @@ THEME_INK = Theme(
     surface_chrome=True,
     tint_track=False,
     bar_background=(222, 214, 199),
-    font_stack='"DejaVu Sans", "Noto Sans KR", sans-serif',
+    font_stack='"Noto Sans KR", sans-serif',
     chrome_css="""
 .root { border-radius: 0; padding: 5px 3px 3px;
   border-top: 2px solid rgba(30,28,25,0.78);
