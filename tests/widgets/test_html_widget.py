@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import pytest
+from PIL import ImageChops
 
 from custom_components.geekmagic.htmldoc import (
     HAS_BLITZ,
@@ -241,6 +242,20 @@ class TestBlitzRender:
         colors = img.getcolors(maxcolors=1_000_000)
         assert colors is not None
         assert len(colors) > 1  # more than just the background
+
+    def test_korean_glyphs_use_embedded_fallback(self):
+        """Different Hangul syllables must not render as the same missing-glyph box."""
+
+        def render_glyph(glyph: str):
+            document = build_cell_document(
+                f'<div style="color:#fff;font-size:80px">{glyph}</div>', DEFAULT_THEME
+            )
+            image = render_document(document, 100, 100)
+            assert image is not None
+            return image
+
+        difference = ImageChops.difference(render_glyph("한"), render_glyph("글"))
+        assert difference.getbbox() is not None
 
     def test_hide_short_responds_to_cell_height(self, widget_state):
         """.hide-short content disappears in cells under 100px tall."""

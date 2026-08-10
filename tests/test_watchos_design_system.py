@@ -237,6 +237,11 @@ class TestThemeCSSFields:
         )
 
     @pytest.mark.parametrize("theme", THEME_OBJS, ids=THEME_IDS)
+    def test_font_stack_includes_korean_fallback(self, theme: Theme) -> None:
+        """Every theme must use the bundled Hangul face before system fallback."""
+        assert "Noto Sans KR" in theme.font_stack
+
+    @pytest.mark.parametrize("theme", THEME_OBJS, ids=THEME_IDS)
     def test_var_references_resolve(self, theme: Theme) -> None:
         """Every var(--x) in the theme's CSS must be a variable actually
         emitted by theme_css_variables — a typo'd var() renders as no

@@ -80,12 +80,14 @@ _LOGGER = logging.getLogger(__name__)
 _FONTS_DIR = Path(__file__).parent / "fonts"
 
 # Font files embedded into every Blitz render. Families resolve by the
-# font's internal name: "Nunito", "DejaVu Sans", "Material Design Icons".
+# font's internal name: "Nunito", "Noto Sans KR", "DejaVu Sans",
+# "Material Design Icons".
 _FONT_FILES = (
     "Nunito-Regular.ttf",
     "Nunito-SemiBold.ttf",
     "Nunito-Bold.ttf",
     "Nunito-ExtraBold.ttf",
+    "NotoSansKR-wght.ttf",
     "DejaVuSans.ttf",
     "DejaVuSans-Bold.ttf",
     "materialdesignicons-webfont.ttf",
